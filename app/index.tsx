@@ -1,13 +1,13 @@
 import { Link } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import '../../i18n'; // Make sure the path is correct
+import '../../i18n'; // התאמת הנתיב לפי המיקום אצלך
 
 export default function HomeScreen() {
   const { t, i18n } = useTranslation();
 
   const toggleLanguage = () => {
-    const newLang = i18n.language === 'he' ? 'en' : 'he';
+    const newLang = i18n.language === 'en' ? 'he' : 'en';
     i18n.changeLanguage(newLang);
   };
 
@@ -15,8 +15,11 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>{t('home.welcome')}</Text>
 
-      <Link href="/about" style={styles.link}>
-        {t('home.about_link')}
+      {/* כאן הקסם */}
+      <Link href="/about" asChild>
+        <Pressable>
+          <Text style={styles.link}>{t('home.about_link')}</Text>
+        </Pressable>
       </Link>
 
       <Pressable onPress={toggleLanguage}>
