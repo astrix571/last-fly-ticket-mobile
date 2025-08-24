@@ -1,7 +1,7 @@
 import { Link } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import '../i18n';
+import '../../i18n'; // Make sure the path is correct
 
 export default function HomeScreen() {
   const { t, i18n } = useTranslation();
