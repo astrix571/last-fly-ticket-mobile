@@ -1,18 +1,25 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
-import { Flight, getFlights } from '../services/flights';
+import { getFlights } from '../services/flights';
+
+type Flight = {
+  id: string;
+  from: string;
+  to: string;
+  date: string;
+};
 
 export default function FlightsScreen() {
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const load = async () => {
+    const loadFlights = async () => {
       const data = await getFlights();
       setFlights(data);
       setLoading(false);
     };
-    load();
+    loadFlights();
   }, []);
 
   if (loading) {
