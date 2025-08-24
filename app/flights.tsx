@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import { getFlights } from '../services/flights';
 
-type Flight = {
-  id: string;
-  from: string;
-  to: string;
-  date: string;
-};
-
 export default function FlightsScreen() {
-  const [flights, setFlights] = useState<Flight[]>([]);
+  const [flights, setFlights] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadFlights = async () => {
-      const data = await getFlights();
-      setFlights(data);
-      setLoading(false);
-    };
-    loadFlights();
+    async function fetchFlights() {
+      try {
+        const data = await getFlights();
+        // תעדכן לפי המבנה המדויק של הנתונים שתחזור מה-API
+        setFlights(data.flights || []);
+      } catch (error) {
+        console.error('Failed to load flights:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchFlights();
   }, []);
 
   if (loading) {
@@ -30,15 +30,25 @@ export default function FlightsScreen() {
     );
   }
 
+  if (flights.length === 0) {
+    return (
+      <View style={styles.centered}>
+        <Text>No flights found.</Text>
+      </View>
+    );
+  }
+
   return (
     <FlatList
       data={flights}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item, index) => index.toString()}
       contentContainerStyle={styles.container}
       renderItem={({ item }) => (
         <View style={styles.card}>
-          <Text style={styles.route}>{item.from} → {item.to}</Text>
-          <Text style={styles.date}>{item.date}</Text>
+          <Text style={styles.route}>
+            {item.cityFrom} → {item.cityTo}
+          </Text>
+          <Text style={styles.date}>{new Date(item.dTime * 1000).toLocaleDateString()}</Text>
         </View>
       )}
     />
@@ -52,6 +62,7 @@ const styles = StyleSheet.create({
   centered: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   card: {
     padding: 16,

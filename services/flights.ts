@@ -5,7 +5,13 @@ const headers = {
   'X-RapidAPI-Host': 'kiwi-com-cheap-flights.p.rapidapi.com',
 };
 
-export async function getFlights() {
+export interface Flight {
+  cityFrom: string;
+  cityTo: string;
+  dTime: number;
+}
+
+export async function getFlights(): Promise<Flight[]> {
   const params = new URLSearchParams({
     source: 'country%3AUS',
     destination: 'city%3Adubrovnik_hr',
@@ -32,9 +38,10 @@ export async function getFlights() {
     }
 
     const data = await response.json();
-    return data;
+
+    return data.flights || [];
   } catch (error) {
     console.error('Error fetching flights:', error);
-    throw error;
+    return [];
   }
 }
