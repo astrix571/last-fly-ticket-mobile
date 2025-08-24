@@ -1,13 +1,26 @@
-import { View, Text, StyleSheet } from 'react-native';
 import { Link } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import '../i18n';
 
 export default function HomeScreen() {
+  const { t, i18n } = useTranslation();
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'he' ? 'en' : 'he';
+    i18n.changeLanguage(newLang);
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>ברוך הבא ל־Last Fly Ticket ✈️</Text>
+      <Text style={styles.title}>{t('home.welcome')}</Text>
       <Link href="/about" style={styles.link}>
-        עבור למסך אודות
+        {t('home.about_link')}
       </Link>
+
+      <Pressable onPress={toggleLanguage}>
+        <Text style={styles.toggle}>{t('common.language_toggle')}</Text>
+      </Pressable>
     </View>
   );
 }
@@ -18,13 +31,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
+    padding: 20,
   },
   title: {
     fontSize: 24,
     marginBottom: 20,
+    textAlign: 'center',
   },
   link: {
     fontSize: 18,
     color: 'blue',
+    marginBottom: 20,
+  },
+  toggle: {
+    fontSize: 16,
+    color: '#555',
   },
 });
