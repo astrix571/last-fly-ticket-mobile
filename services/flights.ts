@@ -1,19 +1,40 @@
-// services/flights.ts
+const API_URL = 'https://kiwi-com-cheap-flights.p.rapidapi.com/round-trip';
 
-export type Flight = {
-  id: string;
-  from: string;
-  to: string;
-  date: string;
+const headers = {
+  'X-RapidAPI-Key': '9f645d5a25msh33ec48fcf2dae40p1f6607jsn54f870fdd02a',
+  'X-RapidAPI-Host': 'kiwi-com-cheap-flights.p.rapidapi.com',
 };
 
-export const getFlights = async (): Promise<Flight[]> => {
+export async function getFlights() {
+  const params = new URLSearchParams({
+    source: 'country%3AUS',
+    destination: 'city%3Adubrovnik_hr',
+    currency: 'usd',
+    locale: 'en',
+    adults: '1',
+    children: '0',
+    infants: '0',
+    bags: '1',
+    cabinClass: 'ECONOMY',
+    sortBy: 'QUALITY',
+    sortOrder: 'ASC',
+    limit: '10',
+  });
+
   try {
-    const res = await fetch('https://mocki.io/v1/564e1ff3-d957-4a4d-b7ba-ecc22b7f97b1');
-    if (!res.ok) throw new Error('Failed to fetch flights');
-    return await res.json();
+    const response = await fetch(`${API_URL}?${params.toString()}`, {
+      method: 'GET',
+      headers,
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error('Error fetching flights:', error);
-    return [];
+    throw error;
   }
-};
+}
