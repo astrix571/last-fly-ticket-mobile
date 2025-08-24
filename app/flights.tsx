@@ -1,17 +1,22 @@
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
-import { getFlights } from '../services/flights';
+import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { Flight, getFlights } from '../../services/flights';
 
 export default function FlightsScreen() {
-  const [flights, setFlights] = useState<any[]>([]);
+  const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchFlights() {
       try {
         const data = await getFlights();
-        // תעדכן לפי המבנה המדויק של הנתונים שתחזור מה-API
-        setFlights(data.flights || []);
+        setFlights(data);
       } catch (error) {
         console.error('Failed to load flights:', error);
       } finally {
@@ -41,14 +46,16 @@ export default function FlightsScreen() {
   return (
     <FlatList
       data={flights}
-      keyExtractor={(item, index) => index.toString()}
+      keyExtractor={(_, index) => index.toString()}
       contentContainerStyle={styles.container}
       renderItem={({ item }) => (
         <View style={styles.card}>
           <Text style={styles.route}>
             {item.cityFrom} → {item.cityTo}
           </Text>
-          <Text style={styles.date}>{new Date(item.dTime * 1000).toLocaleDateString()}</Text>
+          <Text style={styles.date}>
+            {new Date(item.dTime * 1000).toLocaleDateString()}
+          </Text>
         </View>
       )}
     />
