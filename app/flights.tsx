@@ -46,9 +46,9 @@ export default function FlightsScreen() {
   return (
     <FlatList
       data={flights}
-      keyExtractor={(_, index) => index.toString()}
+      keyExtractor={(item: Flight, index: number) => index.toString()}
       contentContainerStyle={styles.container}
-      renderItem={({ item }) => (
+      renderItem={({ item }: { item: Flight }) => (
         <View style={styles.card}>
           <Text style={styles.route}>
             {item.cityFrom} → {item.cityTo}

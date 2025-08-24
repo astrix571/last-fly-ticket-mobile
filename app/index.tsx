@@ -15,7 +15,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>{t('home.welcome')}</Text>
 
-      <Link href="about" style={styles.link}>
+      <Link href="/about" style={styles.link}>
         {t('home.about_link')}
       </Link>
 
