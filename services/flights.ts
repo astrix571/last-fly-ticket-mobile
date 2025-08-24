@@ -1,15 +1,15 @@
+export interface Flight {
+  cityFrom: string;
+  cityTo: string;
+  dTime: number;
+}
+
 const API_URL = 'https://kiwi-com-cheap-flights.p.rapidapi.com/round-trip';
 
 const headers = {
   'X-RapidAPI-Key': '9f645d5a25msh33ec48fcf2dae40p1f6607jsn54f870fdd02a',
   'X-RapidAPI-Host': 'kiwi-com-cheap-flights.p.rapidapi.com',
 };
-
-export interface Flight {
-  cityFrom: string;
-  cityTo: string;
-  dTime: number;
-}
 
 export async function getFlights(): Promise<Flight[]> {
   const params = new URLSearchParams({
@@ -38,7 +38,6 @@ export async function getFlights(): Promise<Flight[]> {
     }
 
     const data = await response.json();
-
     return data.flights || [];
   } catch (error) {
     console.error('Error fetching flights:', error);
