@@ -1,20 +1,17 @@
 {
-    "compilerOptions": {
-      "target": "esnext",
-      "module": "esnext",
-      "jsx": "react-native",
-      "strict": true,
-      "moduleResolution": "node",
-      "esModuleInterop": true,
-      "skipLibCheck": true,
-      "allowJs": true,
-      "resolveJsonModule": true,
-      "noEmit": true,
-      "isolatedModules": true,
-      "baseUrl": ".",
-      "paths": {
-        "@/*": ["./*"]
-      }
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "jsx": "react-native",
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
     }
-  }
-  
+  },
+  "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
+}
