@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
     FlatList,
     RefreshControl,
@@ -22,7 +22,6 @@ export default function FlightsScreen() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-
     setTimeout(() => {
       const mockData: Flight[] = [
         {
@@ -32,15 +31,7 @@ export default function FlightsScreen() {
           price: 329,
           currency: 'USD',
         },
-        {
-          from: 'New York',
-          to: 'Paris',
-          depart: '2025-09-20T18:00:00',
-          price: 599,
-          currency: 'USD',
-        },
       ];
-
       setData(mockData);
       setRaw(mockData);
       setRefreshing(false);
@@ -75,12 +66,8 @@ export default function FlightsScreen() {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
-      ListHeaderComponent={
-        <Text style={styles.header}>Flight Search Results</Text>
-      }
-      ListEmptyComponent={
-        <Text style={styles.mono}>No flights found.</Text>
-      }
+      ListHeaderComponent={<Text style={styles.header}>Flight Search Results</Text>}
+      ListEmptyComponent={<Text style={styles.mono}>No flights found.</Text>}
     />
   );
 }
