@@ -1,0 +1,13 @@
+{
+    "home": {
+      "welcome": "Welcome to Last Fly Ticket",
+      "about_link": "Go to About"
+    },
+    "common": {
+      "language_toggle": "Change Language"
+    },
+    "about": {
+      "description": "This is the about page."
+    }
+  }
+  
