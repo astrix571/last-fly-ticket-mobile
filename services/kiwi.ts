@@ -1,7 +1,8 @@
 // services/kiwi.ts
 import axios from 'axios';
+import Constants from 'expo-constants';
 
-const KIWI_API_KEY = '9f645d5a25msh33ec48fcf2dae40p1f6607jsn548f70fdd02a'; // 🔐 החלף את המפתח אם תעבור לסביבת PROD
+const KIWI_API_KEY = Constants.expoConfig?.extra?.KIWI_API_KEY;
 
 const kiwiApi = axios.create({
   baseURL: 'https://kiwi-com-cheap-flights.p.rapidapi.com',
