@@ -9,34 +9,25 @@ export default function FlightsScreen() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("💡 IATA received:", iata);
-    console.log("💡 Mood received:", mood);
-
     const fetchFlights = async () => {
-      try {
-        console.log("📡 Fetching flights from TLV to:", iata);
+      console.log("Fetching flights from TLV to:", iata);
 
-        const res = await getFlights({
-          origin: 'TLV',
-          destination: iata,
-          dateFrom: '01/09/2025',
-          dateTo: '05/09/2025',
-          limit: 5,
-        });
+      const res = await getFlights({
+        origin: 'TLV',
+        destination: iata || '',
+        dateFrom: '01/09/2025',
+        dateTo: '05/09/2025',
+        limit: 5,
+      });
 
-        console.log("✅ Flights received:", res.data);
-        setFlights(res.data || []);
-      } catch (error) {
-        console.error('❌ Error fetching flights:', error);
-      } finally {
-        setLoading(false);
-      }
+      console.log("Flights data:", res.data);
+      setFlights(res.data || []);
+      setLoading(false);
     };
 
     if (iata) {
       fetchFlights();
     } else {
-      console.warn('⚠️ No IATA code received.');
       setLoading(false);
     }
   }, [iata]);
@@ -44,13 +35,8 @@ export default function FlightsScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Flights for mood: {mood}</Text>
-
       {loading && <ActivityIndicator size="large" style={{ marginTop: 20 }} />}
-
-      {!loading && flights.length === 0 && (
-        <Text style={{ marginTop: 20 }}>No flights found for {iata}.</Text>
-      )}
-
+      {!loading && flights.length === 0 && <Text style={{ marginTop: 20 }}>No flights found for {iata}.</Text>}
       <FlatList
         data={flights}
         keyExtractor={(item) => item.id}
