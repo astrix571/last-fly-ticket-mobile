@@ -1,5 +1,7 @@
-// services/kiwi.ts
 import axios from 'axios';
+import Constants from 'expo-constants';
+
+const RAPIDAPI_KEY = Constants.expoConfig?.extra?.RAPIDAPI_KEY;
 
 export async function getFlights(params: {
   origin: string;
@@ -10,51 +12,25 @@ export async function getFlights(params: {
 }) {
   const { origin, destination, dateFrom, dateTo, limit } = params;
 
-  // הזן כאן את המפתח שלך אם יש
-  const API_KEY = 'YOUR_KIWI_API_KEY';
-  const url = 'https://api.tequila.kiwi.com/v2/search';
-
   try {
-    const response = await axios.get(url, {
-      headers: { apikey: API_KEY },
+    const response = await axios.get('https://kiwi-flights.p.rapidapi.com/flights', {
       params: {
         fly_from: origin,
         fly_to: destination,
-        dateFrom,
-        dateTo,
+        date_from: dateFrom,
+        date_to: dateTo,
         limit,
-        one_for_city: 0,
-        partner: 'picky',
+      },
+      headers: {
+        'X-RapidAPI-Key': RAPIDAPI_KEY,
+        'X-RapidAPI-Host': 'kiwi-flights.p.rapidapi.com',
       },
     });
-    console.log('Kiwi raw response:', response.data);
 
-    if (response.data && response.data.data?.length > 0) {
-      return { data: response.data.data };
-    } else {
-      console.warn('⚠️ No flights found — returning mock data');
-    }
+    console.log('✅ Real API response:', response.data);
+    return { data: response.data.data || [] };
   } catch (error) {
-    console.error('🛑 Error calling Kiwi API:', error);
+    console.error('🛑 Error calling Kiwi via RapidAPI:', error);
+    return { data: [] };
   }
-
-  // Mock fallback (לבדיקה)
-  return {
-    data: [
-      {
-        id: 'mock-1',
-        cityFrom: origin,
-        cityTo: destination,
-        price: 999,
-        route: [{ airline: 'MOCK', local_departure: '2025-09-01T00:00:00.000Z' }],
-      },
-      {
-        id: 'mock-2',
-        cityFrom: origin,
-        cityTo: destination,
-        price: 799,
-        route: [{ airline: 'MOCK2', local_departure: '2025-09-02T00:00:00.000Z' }],
-      },
-    ],
-  };
 }
