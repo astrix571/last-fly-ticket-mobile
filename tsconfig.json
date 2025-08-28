@@ -4,12 +4,10 @@
     "baseUrl": ".",
     "paths": {
       "@components/*": ["components/*"],
-      "@hooks/*": ["hooks/*"],
-      "@env": ["env.d.ts"]
+      "@hooks/*": ["hooks/*"]
     }
   },
   "include": [
-    "env.d.ts",
     "**/*.ts",
     "**/*.tsx"
   ]
