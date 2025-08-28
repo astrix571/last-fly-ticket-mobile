@@ -2,16 +2,14 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@components/*": [
-        "components/*"
-      ],
-      "@hooks/*": [
-        "hooks/*"
-      ]
+      "@components/*": ["components/*"],
+      "@hooks/*": ["hooks/*"],
+      "@env": ["env.d.ts"]
     }
   },
   "extends": "expo/tsconfig.base",
   "include": [
+    "env.d.ts",
     "**/*.ts",
     "**/*.tsx"
   ]
