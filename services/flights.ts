@@ -1,46 +1,61 @@
+import axios from 'axios';
+import { format } from 'date-fns';
+
 export interface Flight {
   cityFrom: string;
   cityTo: string;
-  dTime: number;
+  price: number;
+  airline: string;
+  departure: string;
+  id: string;
 }
 
-const API_URL = 'https://kiwi-com-cheap-flights.p.rapidapi.com/round-trip';
+const API_URL =
+  'https://travelpayouts-travelpayouts-flight-data-v1.p.rapidapi.com/v2/prices/nearest-places-matrix';
 
 const headers = {
-  'X-RapidAPI-Key': '9f645d5a25msh33ec48fcf2dae40p1f6607jsn54f870fdd02a',
-  'X-RapidAPI-Host': 'kiwi-com-cheap-flights.p.rapidapi.com',
+  'X-RapidAPI-Key': process.env.TRAVEL_API_KEY || '',
+  'X-RapidAPI-Host': 'travelpayouts-travelpayouts-flight-data-v1.p.rapidapi.com',
 };
 
-export async function getFlights(): Promise<Flight[]> {
-  const params = new URLSearchParams({
-    source: 'country%3AUS',
-    destination: 'city%3Adubrovnik_hr',
-    currency: 'usd',
-    locale: 'en',
-    adults: '1',
-    children: '0',
-    infants: '0',
-    bags: '1',
-    cabinClass: 'ECONOMY',
-    sortBy: 'QUALITY',
-    sortOrder: 'ASC',
-    limit: '10',
-  });
+export async function getFlights(destination: string): Promise<Flight[]> {
+  const origin = 'TLV';
+  const currency = 'usd';
+  const departureDate = format(
+    new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    'yyyy-MM-dd'
+  );
 
   try {
-    const response = await fetch(`${API_URL}?${params.toString()}`, {
-      method: 'GET',
+    console.log('📡 Fetching flights from', origin, 'to:', destination);
+
+    const response = await axios.get(API_URL, {
+      params: {
+        origin,
+        destination,
+        currency,
+        departure_at: departureDate,
+        distance: '200',
+        limit: '5',
+      },
       headers,
     });
 
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
+    const data = response.data.data || [];
 
-    const data = await response.json();
-    return data.flights || [];
-  } catch (error) {
-    console.error('Error fetching flights:', error);
+    const flights: Flight[] = data.map((flight: any, index: number) => ({
+      id: `flight-${index}-${flight.value}`,
+      cityFrom: origin,
+      cityTo: destination,
+      price: flight.value,
+      airline: flight.airline || 'Unknown',
+      departure: flight.departure_at || '',
+    }));
+
+    console.log('✅ Flights received:', flights.length);
+    return flights;
+  } catch (error: any) {
+    console.error('🛑 Error calling Travelpayouts API:', error);
     return [];
   }
 }
