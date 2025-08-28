@@ -1,27 +1,21 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
-import { getFlights } from '../services/kiwi';
+import { Flight, getFlights } from '../services/flights';
 
 export default function FlightsScreen() {
   const { iata, mood } = useLocalSearchParams<{ iata: string; mood: string }>();
-  const [flights, setFlights] = useState<any[]>([]);
+  const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchFlights = async () => {
-      console.log("Fetching flights from TLV to:", iata);
+      console.log("📡 Fetching flights from TLV to:", iata);
+      if (!iata) return;
 
-      const res = await getFlights({
-        origin: 'TLV',
-        destination: iata || '',
-        dateFrom: '01/09/2025',
-        dateTo: '05/09/2025',
-        limit: 5,
-      });
-
-      console.log("Flights data:", res.data);
-      setFlights(res.data || []);
+      const res = await getFlights(iata);
+      console.log("✅ Flights data:", res);
+      setFlights(res);
       setLoading(false);
     };
 
@@ -35,8 +29,12 @@ export default function FlightsScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Flights for mood: {mood}</Text>
+
       {loading && <ActivityIndicator size="large" style={{ marginTop: 20 }} />}
-      {!loading && flights.length === 0 && <Text style={{ marginTop: 20 }}>No flights found for {iata}.</Text>}
+      {!loading && flights.length === 0 && (
+        <Text style={{ marginTop: 20 }}>No flights found for {iata}.</Text>
+      )}
+
       <FlatList
         data={flights}
         keyExtractor={(item) => item.id}
@@ -44,8 +42,6 @@ export default function FlightsScreen() {
           <View style={styles.card}>
             <Text>{item.cityFrom} → {item.cityTo}</Text>
             <Text>Price: ${item.price}</Text>
-            <Text>Airline: {item.route?.[0]?.airline}</Text>
-            <Text>Date: {item.route?.[0]?.local_departure?.slice(0, 10)}</Text>
           </View>
         )}
         style={{ marginTop: 20 }}
