@@ -1,104 +1,60 @@
 // services/kiwi.ts
-import axios, { AxiosError } from 'axios';
-import Constants from 'expo-constants';
+import axios from 'axios';
 
-/**
- * IMPORTANT:
- * make sure you have KIWI_API_KEY in app.config.(js|ts) -> extra.KIWI_API_KEY
- * and .env contains KIWI_API_KEY=XXXX
- * then run: npx expo start --clear
- */
-
-const KIWI_API_KEY = Constants.expoConfig?.extra?.KIWI_API_KEY as string | undefined;
-const RAPID_HOST = 'kiwi-com-cheap-flights.p.rapidapi.com';
-
-if (!KIWI_API_KEY || KIWI_API_KEY.trim().length === 0) {
-  // Throwing early helps avoid confusing 403s when the key is actually missing.
-  console.warn('[kiwi] Missing KIWI_API_KEY from Constants.expoConfig.extra');
-}
-
-const kiwiApi = axios.create({
-  baseURL: `https://${RAPID_HOST}`,
-  headers: {
-    'X-RapidAPI-Key': KIWI_API_KEY ?? '',
-    'X-RapidAPI-Host': RAPID_HOST,
-  },
-  timeout: 15000,
-});
-
-export type GetFlightsParams = {
-  /** origin can be IATA (e.g. "TLV") or "lat-lng" string (e.g. "48.8566-2.3522") */
-  origin?: string;
-  /** destination IATA (e.g. "ATH") */
+export async function getFlights(params: {
+  origin: string;
   destination: string;
-  /** dd/MM/yyyy */
-  dateFrom?: string;
-  /** dd/MM/yyyy */
-  dateTo?: string;
-  limit?: number;
-  currency?: string;
-  locale?: string;
-};
+  dateFrom: string;
+  dateTo: string;
+  limit: number;
+}) {
+  const { origin, destination, dateFrom, dateTo, limit } = params;
 
-/**
- * We try the /round-trip endpoint with a conservative set of params that RapidAPI accepts.
- * If the API rejects origin fields, we still return results filtered by destination.
- */
-export async function getFlights({
-  origin,
-  destination,
-  dateFrom,
-  dateTo,
-  limit = 5,
-  currency = 'usd',
-  locale = 'en',
-}: GetFlightsParams): Promise<any> {
+  // הזן כאן את המפתח שלך אם יש
+  const API_KEY = 'YOUR_KIWI_API_KEY';
+  const url = 'https://api.tequila.kiwi.com/v2/search';
+
   try {
-    // Build params defensively. Some RapidAPI proxies are strict with names.
-    const params: Record<string, string | number | boolean> = {
-      // Core options (keep them simple & widely accepted by the RapidAPI proxy)
-      destination,          // destination IATA (e.g. "ATH")
-      currency,             // "usd"
-      locale,               // "en"
-      limit,                // number of results
+    const response = await axios.get(url, {
+      headers: { apikey: API_KEY },
+      params: {
+        fly_from: origin,
+        fly_to: destination,
+        dateFrom,
+        dateTo,
+        limit,
+        one_for_city: 0,
+        partner: 'picky',
+      },
+    });
+    console.log('Kiwi raw response:', response.data);
 
-      // Dates (optional; many proxies accept these names)
-      ...(dateFrom ? { dateFrom } : {}),
-      ...(dateTo ? { dateTo } : {}),
-    };
-
-    // Try to provide origin in multiple common fields (the proxy will ignore unknowns):
-    if (origin) {
-      // If it's lat-lng like "48.8566-2.3522"
-      const isLatLng = origin.includes('-') || origin.includes(',');
-      if (isLatLng) {
-        params.sourceCoordinates = origin.replace(',', '-'); // e.g. "48.8566-2.3522"
-      } else {
-        // Probably IATA like "TLV"
-        params.sourceCity = origin;
-        params.source = 'city';
-      }
+    if (response.data && response.data.data?.length > 0) {
+      return { data: response.data.data };
+    } else {
+      console.warn('⚠️ No flights found — returning mock data');
     }
-
-    const res = await kiwiApi.get('/round-trip', { params });
-    return res.data;
-  } catch (err) {
-    const ax = err as AxiosError;
-    const status = ax.response?.status;
-    const body = ax.response?.data;
-
-    console.error(
-      `[getFlights] Error ${status ?? ''}`,
-      typeof body === 'object' ? JSON.stringify(body) : body
-    );
-
-    // Provide a clearer error to the UI:
-    if (status === 401 || status === 403) {
-      throw new Error(
-        'Unauthorized (401/403). Verify RapidAPI subscription, X-RapidAPI-Key, and Host headers.'
-      );
-    }
-
-    throw new Error(ax.message || 'Unknown error while calling Kiwi API');
+  } catch (error) {
+    console.error('🛑 Error calling Kiwi API:', error);
   }
+
+  // Mock fallback (לבדיקה)
+  return {
+    data: [
+      {
+        id: 'mock-1',
+        cityFrom: origin,
+        cityTo: destination,
+        price: 999,
+        route: [{ airline: 'MOCK', local_departure: '2025-09-01T00:00:00.000Z' }],
+      },
+      {
+        id: 'mock-2',
+        cityFrom: origin,
+        cityTo: destination,
+        price: 799,
+        route: [{ airline: 'MOCK2', local_departure: '2025-09-02T00:00:00.000Z' }],
+      },
+    ],
+  };
 }
