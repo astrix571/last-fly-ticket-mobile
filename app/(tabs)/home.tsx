@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Text, View } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 
-export default function MoodDestinations() {
+export default function HomeScreen() {
   const destinations = [
     { label: 'Barcelona (BCN)', value: 'BCN' },
     { label: 'Athens (ATH)', value: 'ATH' },
