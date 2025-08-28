@@ -37,6 +37,9 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "KIWI_API_KEY": process.env.KIWI_API_KEY
     }
   }
 }
