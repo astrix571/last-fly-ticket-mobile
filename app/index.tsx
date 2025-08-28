@@ -1,3 +1,4 @@
+console.log('🏠 Index.tsx loaded');
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
