@@ -5,26 +5,16 @@ export interface Flight {
   cityFrom: string;
   cityTo: string;
   price: number;
-  airline: string;
-  departure: string;
   id: string;
 }
 
-const API_URL =
-  'https://travelpayouts-travelpayouts-flight-data-v1.p.rapidapi.com/v2/prices/nearest-places-matrix';
+const API_URL = 'https://api.travelpayouts.com/v1/prices/cheap';
 
-const headers = {
-  'X-RapidAPI-Key': process.env.TRAVEL_API_KEY || '',
-  'X-RapidAPI-Host': 'travelpayouts-travelpayouts-flight-data-v1.p.rapidapi.com',
-};
+const API_TOKEN = process.env.TRAVEL_API_KEY || '';
 
 export async function getFlights(destination: string): Promise<Flight[]> {
-  const origin = 'TLV';
-  const currency = 'usd';
-  const departureDate = format(
-    new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    'yyyy-MM-dd'
-  );
+  const origin = 'TLV'; // Default origin
+  const departMonth = format(new Date(), 'yyyy-MM'); // Example: 2025-09
 
   try {
     console.log('📡 Fetching flights from', origin, 'to:', destination);
@@ -33,29 +23,28 @@ export async function getFlights(destination: string): Promise<Flight[]> {
       params: {
         origin,
         destination,
-        currency,
-        departure_at: departureDate,
-        distance: '200',
-        limit: '5',
+        depart_date: departMonth,
+        return_date: departMonth,
+        currency: 'usd',
+        token: API_TOKEN,
       },
-      headers,
     });
 
-    const data = response.data.data || [];
+    const data = response.data.data[destination];
 
-    const flights: Flight[] = data.map((flight: any, index: number) => ({
-      id: `flight-${index}-${flight.value}`,
+    if (!data) return [];
+
+    const flights: Flight[] = Object.values(data).map((flight: any, index: number) => ({
+      id: `flight-${index}`,
       cityFrom: origin,
       cityTo: destination,
-      price: flight.value,
-      airline: flight.airline || 'Unknown',
-      departure: flight.departure_at || '',
+      price: flight.price,
     }));
 
     console.log('✅ Flights received:', flights.length);
     return flights;
   } catch (error: any) {
-    console.error('🛑 Error calling Travelpayouts API:', error);
+    console.error('🛑 Error fetching flights:', error);
     return [];
   }
 }
