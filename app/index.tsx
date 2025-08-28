@@ -1,8 +1,6 @@
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-console.log('🏠 Index.tsx loaded');
-
 const moods = ['adventure', 'chill', 'romantic', 'surprise'];
 
 export default function HomeScreen() {
@@ -15,7 +13,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>How do you feel today?</Text>
+      <Text style={styles.title}>Select your mood:</Text>
       {moods.map((mood) => (
         <Pressable key={mood} style={styles.button} onPress={() => handleMoodSelect(mood)}>
           <Text style={styles.buttonText}>{mood.toUpperCase()}</Text>
