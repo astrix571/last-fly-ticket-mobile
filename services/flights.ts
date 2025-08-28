@@ -1,4 +1,4 @@
-import { TRAVEL_API_KEY } from '@env'; // ✅ זה במקום process.env
+import { TRAVEL_API_KEY } from '@env';
 import axios from 'axios';
 import { format } from 'date-fns';
 
@@ -29,11 +29,11 @@ export async function getFlights(destination: string): Promise<Flight[]> {
       },
     });
 
-    const data = response.data.data[destination];
+    const flightData = response.data.data[destination];
 
-    if (!data) return [];
+    if (!flightData) return [];
 
-    const flights: Flight[] = Object.values(data).map((flight: any, index: number) => ({
+    const flights: Flight[] = Object.values(flightData).map((flight: any, index: number) => ({
       id: `flight-${index}`,
       cityFrom: origin,
       cityTo: destination,
@@ -43,7 +43,7 @@ export async function getFlights(destination: string): Promise<Flight[]> {
     console.log('✅ Flights received:', flights.length);
     return flights;
   } catch (error: any) {
-    console.error('🛑 Error fetching flights:', error);
+    console.error('🛑 Error fetching flights:', error.message || error);
     return [];
   }
 }
