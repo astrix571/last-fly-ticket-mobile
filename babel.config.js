@@ -1,4 +1,4 @@
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],
@@ -9,10 +9,19 @@ module.exports = function(api) {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
           alias: {
             '@components': './components',
-            '@hooks': './hooks'
-          }
-        }
-      ]
-    ]
+            '@hooks': './hooks',
+          },
+        },
+      ],
+      [
+        'dotenv-import',
+        {
+          moduleName: '@env',
+          path: '.env',
+          safe: false,
+          allowUndefined: true,
+        },
+      ],
+    ],
   };
 };

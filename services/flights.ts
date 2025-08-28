@@ -1,3 +1,4 @@
+import { TRAVEL_API_KEY } from '@env'; // ✅ זה במקום process.env
 import axios from 'axios';
 import { format } from 'date-fns';
 
@@ -10,11 +11,9 @@ export interface Flight {
 
 const API_URL = 'https://api.travelpayouts.com/v1/prices/cheap';
 
-const API_TOKEN = process.env.TRAVEL_API_KEY || '';
-
 export async function getFlights(destination: string): Promise<Flight[]> {
-  const origin = 'TLV'; // Default origin
-  const departMonth = format(new Date(), 'yyyy-MM'); // Example: 2025-09
+  const origin = 'TLV';
+  const departMonth = format(new Date(), 'yyyy-MM');
 
   try {
     console.log('📡 Fetching flights from', origin, 'to:', destination);
@@ -26,7 +25,7 @@ export async function getFlights(destination: string): Promise<Flight[]> {
         depart_date: departMonth,
         return_date: departMonth,
         currency: 'usd',
-        token: API_TOKEN,
+        token: TRAVEL_API_KEY,
       },
     });
 
