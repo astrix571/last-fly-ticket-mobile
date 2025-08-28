@@ -1,7 +1,7 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
-import { getFlights } from '../services/kiwi'; // ודא שזה קיים
+import { getFlights } from '../services/kiwi';
 
 export default function FlightsScreen() {
   const { iata, mood } = useLocalSearchParams<{ iata: string; mood: string }>();
@@ -9,8 +9,13 @@ export default function FlightsScreen() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("💡 IATA received:", iata);
+    console.log("💡 Mood received:", mood);
+
     const fetchFlights = async () => {
       try {
+        console.log("📡 Fetching flights from TLV to:", iata);
+
         const res = await getFlights({
           origin: 'TLV',
           destination: iata,
@@ -18,6 +23,8 @@ export default function FlightsScreen() {
           dateTo: '05/09/2025',
           limit: 5,
         });
+
+        console.log("✅ Flights received:", res.data);
         setFlights(res.data || []);
       } catch (error) {
         console.error('❌ Error fetching flights:', error);
@@ -28,6 +35,9 @@ export default function FlightsScreen() {
 
     if (iata) {
       fetchFlights();
+    } else {
+      console.warn('⚠️ No IATA code received.');
+      setLoading(false);
     }
   }, [iata]);
 
