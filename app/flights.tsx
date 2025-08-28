@@ -1,4 +1,3 @@
-// app/flights.tsx
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
@@ -11,14 +10,14 @@ export default function FlightsScreen() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchFlights = async () => {
       try {
         const res = await getFlights({
           origin: origin as string,
           destination: destination as string,
           dateFrom: dateFrom as string,
           dateTo: dateTo as string,
-          limit: 3,
+          limit: 5,
         });
         setFlights(res.data || []);
       } catch (err: any) {
@@ -27,7 +26,8 @@ export default function FlightsScreen() {
         setLoading(false);
       }
     };
-    fetch();
+
+    fetchFlights();
   }, []);
 
   if (loading) return <ActivityIndicator size="large" style={styles.centered} />;
