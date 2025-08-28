@@ -50,6 +50,7 @@
     "babel-plugin-module-resolver": "^5.0.2",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~9.2.0",
+    "graceful-fs": "^4.2.11",
     "typescript": "~5.8.3"
   },
   "private": true
