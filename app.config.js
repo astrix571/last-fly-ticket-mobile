@@ -2,43 +2,31 @@ import 'dotenv/config';
 
 export default {
   expo: {
-    name: 'last-fly-ticket-mobile',
-    slug: 'last-fly-ticket-mobile',
+    name: 'Last Fly Ticket',
+    slug: 'last-fly-ticket',
     version: '1.0.0',
     orientation: 'portrait',
-    icon: './assets/images/icon.png',
-    scheme: 'lastflyticketmobile',
-    userInterfaceStyle: 'automatic',
-    newArchEnabled: true,
+    icon: './assets/icon.png',
+    splash: {
+      image: './assets/splash.png',
+      resizeMode: 'contain',
+      backgroundColor: '#ffffff',
+    },
+    updates: {
+      fallbackToCacheTimeout: 0,
+    },
+    assetBundlePatterns: ['**/*'],
     ios: {
       supportsTablet: true,
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: './assets/images/adaptive-icon.png',
+        foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#ffffff',
       },
-      edgeToEdgeEnabled: true,
     },
     web: {
-      bundler: 'metro',
-      output: 'static',
-      favicon: './assets/images/favicon.png',
-    },
-    plugins: [
-      'expo-router',
-      [
-        'expo-splash-screen',
-        {
-          image: './assets/images/splash-icon.png',
-          imageWidth: 200,
-          resizeMode: 'contain',
-          backgroundColor: '#ffffff',
-        },
-      ],
-    ],
-    experiments: {
-      typedRoutes: true,
+      favicon: './assets/favicon.png',
     },
     extra: {
       KIWI_API_KEY: process.env.KIWI_API_KEY,
