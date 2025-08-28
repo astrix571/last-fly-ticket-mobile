@@ -5,12 +5,12 @@ import { getFlights } from '../services/kiwi';
 
 export default function FlightsScreen() {
   const { origin, destination, dateFrom, dateTo } = useLocalSearchParams();
-  const [flights, setFlights] = useState<any[]>([]);
+  const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchFlights = async () => {
+    const fetch = async () => {
+      console.log('📡 Fetching flights for:', origin, destination);
       try {
         const res = await getFlights({
           origin: origin as string,
@@ -19,20 +19,19 @@ export default function FlightsScreen() {
           dateTo: dateTo as string,
           limit: 5,
         });
+        console.log('✅ Flights received:', res.data);
         setFlights(res.data || []);
-      } catch (err: any) {
-        setError(err.message || 'Unknown error');
+      } catch (err) {
+        console.error('❌ Error:', err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFlights();
+    fetch();
   }, []);
 
-  if (loading) return <ActivityIndicator size="large" style={styles.centered} />;
-  if (error) return <Text style={styles.error}>❌ {error}</Text>;
-  if (flights.length === 0) return <Text style={styles.empty}>No flights found</Text>;
+  if (loading) return <ActivityIndicator style={styles.centered} />;
 
   return (
     <FlatList
@@ -41,31 +40,26 @@ export default function FlightsScreen() {
       contentContainerStyle={styles.list}
       renderItem={({ item }) => (
         <View style={styles.card}>
-          <Text style={styles.route}>
-            ✈️ {item.cityFrom} → {item.cityTo}
-          </Text>
-          <Text>Date: {item.route?.[0]?.local_departure?.slice(0, 10)}</Text>
-          <Text>Return: {item.route?.[1]?.local_departure?.slice(0, 10)}</Text>
-          <Text>Airline: {item.route?.[0]?.airline}</Text>
+          <Text>{item.cityFrom} → {item.cityTo}</Text>
           <Text>Price: ${item.price}</Text>
+          <Text>Airline: {item.route?.[0]?.airline}</Text>
+          <Text>Date: {item.route?.[0]?.local_departure?.slice(0, 10)}</Text>
         </View>
       )}
+      ListEmptyComponent={<Text style={{ textAlign: 'center' }}>No flights found.</Text>}
     />
   );
 }
 
 const styles = StyleSheet.create({
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  error: { color: 'red', textAlign: 'center', marginTop: 20 },
-  empty: { textAlign: 'center', marginTop: 20 },
   list: { padding: 16 },
   card: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#ccc',
     borderRadius: 8,
     padding: 12,
-    marginBottom: 12,
+    marginBottom: 10,
     backgroundColor: '#fff',
   },
-  route: { fontSize: 16, fontWeight: 'bold', marginBottom: 4 },
 });
