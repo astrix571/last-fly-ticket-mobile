@@ -13,9 +13,15 @@ module.exports = function (api) {
             '@constants': './constants',
             '@assets': './assets'
           },
-          extensions: ['.js', '.jsx', '.ts', '.tsx']
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
         },
       ],
+      ['dotenv-import', {
+        moduleName: '@env',
+        path: '.env',
+        safe: false,
+        allowUndefined: true,
+      }],
     ],
   };
 };
