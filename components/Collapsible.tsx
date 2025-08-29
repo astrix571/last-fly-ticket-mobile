@@ -3,9 +3,9 @@ import { StyleSheet, TouchableOpacity } from 'react-native';
 
 import { Colors } from '../../constants/Colors';
 import { useColorScheme } from '../../hooks/useColorScheme';
-import { IconSymbol } from '../IconSymbol';
 import { ThemedText } from '../ThemedText';
 import { ThemedView } from '../ThemedView';
+import { IconSymbol } from './IconSymbol';
 
 interface CollapsibleProps extends PropsWithChildren {
   title: string;
@@ -31,6 +31,7 @@ export default function Collapsible({ children, title }: CollapsibleProps) {
             transform: [{ rotate: isOpen ? '90deg' : '0deg' }],
           }}
         />
+
         <ThemedText type="defaultSemiBold">{title}</ThemedText>
       </TouchableOpacity>
 
