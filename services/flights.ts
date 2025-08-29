@@ -32,6 +32,8 @@ export async function getFlights(destination: string): Promise<Flight[]> {
       },
     });
 
+    console.log("📦 Full response:", JSON.stringify(response.data, null, 2));
+
     const dataArr = response.data.data;
     if (!dataArr || !Array.isArray(dataArr)) return [];
 
