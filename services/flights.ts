@@ -1,3 +1,4 @@
+import { EXPO_PUBLIC_TRAVEL_API_KEY } from "@env"; // ✅ שימוש נכון לפי ההגדרה שלך
 import axios from "axios";
 import { format } from "date-fns";
 
@@ -12,7 +13,7 @@ const API_URL = "https://api.travelpayouts.com/v2/prices/latest";
 
 export async function getFlights(destination: string): Promise<Flight[]> {
   const origin = "TLV";
-  const begin = format(new Date(), "yyyy-MM-01"); // תחילת החודש
+  const begin = format(new Date(), "yyyy-MM-01");
 
   try {
     console.log("📡 Fetching flights from", origin, "to:", destination);
@@ -25,7 +26,7 @@ export async function getFlights(destination: string): Promise<Flight[]> {
         beginning_of_period: begin,
         period_type: "month",
         show_to_affiliates: true,
-        token: process.env.EXPO_PUBLIC_TRAVEL_API_KEY,
+        token: EXPO_PUBLIC_TRAVEL_API_KEY, // ✅ שימוש נכון כאן
       },
       headers: {
         "Accept-Encoding": "gzip, deflate",
