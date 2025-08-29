@@ -8,7 +8,7 @@ export default function FlightsScreen() {
 
   const origin = "TLV";
   const destination = "ATH";
-  const date = "2025-09-15";
+  const date = "2025-09-01";
 
 
   useEffect(() => {
