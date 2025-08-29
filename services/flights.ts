@@ -1,4 +1,3 @@
-import { TRAVEL_API_KEY } from '@env';
 import axios from 'axios';
 import { format } from 'date-fns';
 
@@ -10,6 +9,7 @@ export interface Flight {
 }
 
 const API_URL = 'https://api.travelpayouts.com/v1/prices/cheap';
+const TRAVEL_API_KEY = process.env.EXPO_PUBLIC_TRAVEL_API_KEY!;
 
 export async function getFlights(destination: string): Promise<Flight[]> {
   const origin = 'TLV';
