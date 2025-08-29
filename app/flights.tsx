@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
-import { Flight, searchFlights } from "../services/googleFlights";
+import { Flight, searchFlights } from "../../services/googleFlights";
 
 export default function FlightsScreen() {
   const [flights, setFlights] = useState<Flight[]>([]);
@@ -9,6 +9,7 @@ export default function FlightsScreen() {
   const origin = "TLV";
   const destination = "ATH";
   const date = "2025-09-10";
+
   useEffect(() => {
     const fetchFlights = async () => {
       const res = await searchFlights({
@@ -22,10 +23,9 @@ export default function FlightsScreen() {
       setFlights(res);
       setLoading(false);
     };
-  
+
     fetchFlights();
   }, []);
-  
 
   if (loading) {
     return (
