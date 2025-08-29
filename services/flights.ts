@@ -1,4 +1,4 @@
-import { EXPO_PUBLIC_TRAVEL_API_KEY } from "@env"; // <-- זה נכון אם יש לך @env
+import { EXPO_PUBLIC_TRAVEL_API_KEY } from "@env";
 import axios from "axios";
 import { format } from "date-fns";
 
@@ -24,10 +24,10 @@ export async function getFlights(destination: string): Promise<Flight[]> {
         beginning_of_period: begin,
         period_type: "month",
         show_to_affiliates: true,
-        token: EXPO_PUBLIC_TRAVEL_API_KEY, // ✅
+        token: EXPO_PUBLIC_TRAVEL_API_KEY,
       },
       headers: {
-        "X-Access-Token": EXPO_PUBLIC_TRAVEL_API_KEY, // ✅
+        "X-Access-Token": EXPO_PUBLIC_TRAVEL_API_KEY,
         "Accept-Encoding": "gzip, deflate",
       },
     });
@@ -43,8 +43,7 @@ export async function getFlights(destination: string): Promise<Flight[]> {
     }));
 
     return flights;
-  } catch (error: any) {
-    console.error("🛑 Error fetching flights:", error.response?.status, error.message);
+  } catch {
     return [];
   }
 }
