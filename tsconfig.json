@@ -6,8 +6,10 @@
       "@components/*": ["components/*"],
       "@hooks/*": ["hooks/*"],
       "@constants/*": ["constants/*"],
-      "@assets/*": ["assets/*"]
+      "@assets/*": ["assets/*"],
+      "@env": ["env.d.ts"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": ["env.d.ts", "**/*.ts", "**/*.tsx"]
 }
+
