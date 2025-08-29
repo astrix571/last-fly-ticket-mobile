@@ -1,5 +1,5 @@
+import { EXPO_PUBLIC_TRAVEL_API_KEY } from '@env';
 import axios from 'axios';
-import { format } from 'date-fns';
 
 export interface Flight {
   cityFrom: string;
@@ -8,12 +8,10 @@ export interface Flight {
   id: string;
 }
 
-const API_URL = 'https://api.travelpayouts.com/v1/prices/cheap';
-const TRAVEL_API_KEY = process.env.EXPO_PUBLIC_TRAVEL_API_KEY!;
+const API_URL = 'https://travelpayouts-travelpayouts-flight-data-v1.p.rapidapi.com/v2/prices/nearest-places-matrix';
 
 export async function getFlights(destination: string): Promise<Flight[]> {
   const origin = 'TLV';
-  const departMonth = format(new Date(), 'yyyy-MM');
 
   try {
     console.log('📡 Fetching flights from', origin, 'to:', destination);
@@ -22,18 +20,22 @@ export async function getFlights(destination: string): Promise<Flight[]> {
       params: {
         origin,
         destination,
-        depart_date: departMonth,
-        return_date: departMonth,
-        currency: 'usd',
-        token: TRAVEL_API_KEY,
+        flexibility: 0,
+        currency: 'USD',
+        limit: 10,
+        distance: 100,
+      },
+      headers: {
+        'X-RapidAPI-Key': EXPO_PUBLIC_TRAVEL_API_KEY,
+        'X-RapidAPI-Host': 'travelpayouts-travelpayouts-flight-data-v1.p.rapidapi.com',
       },
     });
 
-    const flightData = response.data.data[destination];
+    const results = response.data.data[destination];
 
-    if (!flightData) return [];
+    if (!results) return [];
 
-    const flights: Flight[] = Object.values(flightData).map((flight: any, index: number) => ({
+    const flights: Flight[] = Object.values(results).map((flight: any, index: number) => ({
       id: `flight-${index}`,
       cityFrom: origin,
       cityTo: destination,
