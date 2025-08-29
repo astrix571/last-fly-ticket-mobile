@@ -20,6 +20,9 @@ export default function FlightsScreen() {
         country_code: "US",
         language_code: "en-US",
       });
+
+      console.log("🔍 RAW API RESPONSE:", JSON.stringify(res, null, 2));
+
       setFlights(res);
       setLoading(false);
     };
