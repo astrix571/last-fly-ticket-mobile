@@ -31,7 +31,6 @@ export default function Collapsible({ children, title }: CollapsibleProps) {
             transform: [{ rotate: isOpen ? '90deg' : '0deg' }],
           }}
         />
-
         <ThemedText type="defaultSemiBold">{title}</ThemedText>
       </TouchableOpacity>
 
