@@ -1,49 +1,48 @@
+// services/googleFlights.ts
+
 import { EXPO_PUBLIC_TRAVEL_API_KEY } from "@env";
 import axios from "axios";
 import { format } from "date-fns";
 
-export interface Flight {
-  cityFrom: string;
-  cityTo: string;
-  price: number;
-  id: string;
+const API_URL =
+  "https://datacrawler-api-google-flights2.p.rapidapi.com/api/google-flights2/";
+
+export interface FlightSearchParams {
+  origin: string;
+  destination: string;
+  outbound_date: string;
+  currency: string;
+  country_code: string;
+  language_code: string;
 }
 
-const API_URL = "https://travelpayouts-travelpayouts-flight-data-v1.p.rapidapi.com/v2/prices/latest";
-
-export async function getFlights(destination: string): Promise<Flight[]> {
-  const origin = "TLV";
-  const begin = format(new Date(), "yyyy-MM-01");
-
+export async function searchFlights(params: FlightSearchParams) {
   try {
-    const response = await axios.get(API_URL, {
-      params: {
-        origin,
-        destination,
-        currency: "usd",
-        beginning_of_period: begin,
-        period_type: "month",
-        show_to_affiliates: true,
-      },
+    const response = await axios.get(`${API_URL}searchFlights`, {
+      params,
       headers: {
-        "x-rapidapi-key": EXPO_PUBLIC_TRAVEL_API_KEY,
-        "x-rapidapi-host": "travelpayouts-travelpayouts-flight-data-v1.p.rapidapi.com",
+        "X-RapidAPI-Key": EXPO_PUBLIC_TRAVEL_API_KEY,
+        "X-RapidAPI-Host": "datacrawler-api-google-flights2.p.rapidapi.com",
       },
     });
 
-    const dataArr = response.data.data;
-    if (!dataArr || !Array.isArray(dataArr)) return [];
-
-    const flights: Flight[] = dataArr.map((f: any, index: number) => ({
-      id: `flight-${index}`,
-      cityFrom: f.origin,
-      cityTo: f.destination,
-      price: f.value,
-    }));
-
-    return flights;
+    return response.data;
   } catch (error: any) {
-    console.error("🛑 Error fetching flights:", error.response?.status, error.message);
-    return [];
+    console.error("❌ API Error:", error.response?.data || error.message);
+    return null;
   }
 }
+
+// Test run
+(async () => {
+  const result = await searchFlights({
+    origin: "TLV",
+    destination: "LON",
+    outbound_date: format(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"),
+    currency: "USD",
+    country_code: "US",
+    language_code: "en-US",
+  });
+
+  console.log("✈️ API Response:", JSON.stringify(result, null, 2));
+})();
