@@ -1,4 +1,4 @@
-import { EXPO_PUBLIC_TRAVEL_API_KEY } from "@env"; // ✅ שימוש נכון לפי ההגדרה שלך
+import { EXPO_PUBLIC_TRAVEL_API_KEY } from "@env"; // <-- זה נכון אם יש לך @env
 import axios from "axios";
 import { format } from "date-fns";
 
@@ -16,8 +16,6 @@ export async function getFlights(destination: string): Promise<Flight[]> {
   const begin = format(new Date(), "yyyy-MM-01");
 
   try {
-    console.log("📡 Fetching flights from", origin, "to:", destination);
-
     const response = await axios.get(API_URL, {
       params: {
         origin,
@@ -26,9 +24,10 @@ export async function getFlights(destination: string): Promise<Flight[]> {
         beginning_of_period: begin,
         period_type: "month",
         show_to_affiliates: true,
-        token: EXPO_PUBLIC_TRAVEL_API_KEY, // ✅ שימוש נכון כאן
+        token: EXPO_PUBLIC_TRAVEL_API_KEY, // ✅
       },
       headers: {
+        "X-Access-Token": EXPO_PUBLIC_TRAVEL_API_KEY, // ✅
         "Accept-Encoding": "gzip, deflate",
       },
     });
@@ -43,7 +42,6 @@ export async function getFlights(destination: string): Promise<Flight[]> {
       price: f.value,
     }));
 
-    console.log("✅ Flights received:", flights.length);
     return flights;
   } catch (error: any) {
     console.error("🛑 Error fetching flights:", error.response?.status, error.message);
