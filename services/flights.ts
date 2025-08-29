@@ -1,4 +1,3 @@
-import { EXPO_PUBLIC_TRAVEL_API_KEY } from '@env';
 import axios from 'axios';
 
 export interface Flight {
@@ -20,32 +19,34 @@ export async function getFlights(destination: string): Promise<Flight[]> {
       params: {
         origin,
         destination,
-        flexibility: 0,
-        currency: 'USD',
-        limit: 10,
         distance: 100,
+        limit: 10,
+        currency: 'USD',
+        flexibility: 0,
+        show_to_affiliates: true,
       },
       headers: {
-        'X-RapidAPI-Key': EXPO_PUBLIC_TRAVEL_API_KEY,
+        'X-RapidAPI-Key': process.env.EXPO_PUBLIC_TRAVEL_API_KEY,
         'X-RapidAPI-Host': 'travelpayouts-travelpayouts-flight-data-v1.p.rapidapi.com',
       },
     });
 
-    const results = response.data.data[destination];
+    const data = response.data.data;
+    if (!data || !data[destination]) return [];
 
-    if (!results) return [];
-
-    const flights: Flight[] = Object.values(results).map((flight: any, index: number) => ({
-      id: `flight-${index}`,
-      cityFrom: origin,
-      cityTo: destination,
-      price: flight.price,
-    }));
+    const flights: Flight[] = Object.entries(data[destination]).map(
+      ([, flight]: [string, any], index: number) => ({
+        id: `flight-${index}`,
+        cityFrom: origin,
+        cityTo: destination,
+        price: flight.price,
+      })
+    );
 
     console.log('✅ Flights received:', flights.length);
     return flights;
   } catch (error: any) {
-    console.error('🛑 Error fetching flights:', error.message || error);
+    console.error('🛑 Error fetching flights:', error.response?.status, error.message);
     return [];
   }
 }
