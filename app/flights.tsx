@@ -9,16 +9,23 @@ export default function FlightsScreen() {
   const origin = "TLV";
   const destination = "ATH";
   const date = "2025-09-10";
-
   useEffect(() => {
     const fetchFlights = async () => {
-      const res = await searchFlights(origin, destination, date);
+      const res = await searchFlights({
+        origin,
+        destination,
+        outbound_date: date,
+        currency: "USD",
+        country_code: "US",
+        language_code: "en-US",
+      });
       setFlights(res);
       setLoading(false);
     };
-
+  
     fetchFlights();
   }, []);
+  
 
   if (loading) {
     return (
