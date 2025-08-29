@@ -6,11 +6,14 @@ module.exports = function (api) {
       [
         'module-resolver',
         {
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+          root: ['./'],
           alias: {
             '@components': './components',
             '@hooks': './hooks',
+            '@constants': './constants',
+            '@assets': './assets'
           },
+          extensions: ['.js', '.jsx', '.ts', '.tsx']
         },
       ],
     ],
