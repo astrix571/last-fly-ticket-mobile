@@ -9,7 +9,7 @@ export interface Flight {
   id: string;
 }
 
-const API_URL = "https://api.travelpayouts.com/v2/prices/latest";
+const API_URL = "https://travelpayouts-travelpayouts-flight-data-v1.p.rapidapi.com/v2/prices/latest";
 
 export async function getFlights(destination: string): Promise<Flight[]> {
   const origin = "TLV";
@@ -24,15 +24,12 @@ export async function getFlights(destination: string): Promise<Flight[]> {
         beginning_of_period: begin,
         period_type: "month",
         show_to_affiliates: true,
-        token: EXPO_PUBLIC_TRAVEL_API_KEY,
       },
       headers: {
-        "X-Access-Token": EXPO_PUBLIC_TRAVEL_API_KEY,
-        "Accept-Encoding": "gzip, deflate",
+        "x-rapidapi-key": EXPO_PUBLIC_TRAVEL_API_KEY,
+        "x-rapidapi-host": "travelpayouts-travelpayouts-flight-data-v1.p.rapidapi.com",
       },
     });
-
-    console.log("📦 Full response:", JSON.stringify(response.data, null, 2));
 
     const dataArr = response.data.data;
     if (!dataArr || !Array.isArray(dataArr)) return [];
@@ -45,7 +42,8 @@ export async function getFlights(destination: string): Promise<Flight[]> {
     }));
 
     return flights;
-  } catch {
+  } catch (error: any) {
+    console.error("🛑 Error fetching flights:", error.response?.status, error.message);
     return [];
   }
 }
