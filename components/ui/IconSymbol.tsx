@@ -1,51 +1,40 @@
-import React, { PropsWithChildren, useState } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+// components/ui/IconSymbol.tsx
 
-import { ThemedText } from '@components/ThemedText';
-import { ThemedView } from '@components/ThemedView';
-import { IconSymbol } from '@components/ui/IconSymbol';
-import { Colors } from '@constants/Colors';
-import { useColorScheme } from '@hooks/useColorScheme';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { SymbolViewProps, SymbolWeight } from 'expo-symbols';
+import React, { ComponentProps } from 'react';
+import { OpaqueColorValue, StyleProp, TextStyle } from 'react-native';
 
-interface CollapsibleProps extends PropsWithChildren {
-  title: string;
-}
+type IconMapping = Record<SymbolViewProps['name'], ComponentProps<typeof MaterialIcons>['name']>;
+type IconSymbolName = keyof typeof MAPPING;
 
-export default function Collapsible({ children, title }: CollapsibleProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const theme = useColorScheme() ?? 'light';
+/**
+ * Add your SF Symbols to Material Icons mappings here.
+ */
+const MAPPING = {
+  'house.fill': 'home',
+  'paperplane.fill': 'send',
+  'chevron.left.forwardslash.chevron.right': 'code',
+  'chevron.right': 'chevron-right',
+} as const;
 
-  return (
-    <ThemedView>
-      <TouchableOpacity
-        style={styles.heading}
-        onPress={() => setIsOpen((value) => !value)}
-        activeOpacity={0.8}
-      >
-        <IconSymbol
-          name="chevron.right"
-          size={18}
-          color={theme === 'light' ? Colors.light.icon : Colors.dark.icon}
-          style={{
-            transform: [{ rotate: isOpen ? '90deg' : '0deg' }],
-          }}
-        />
-        <ThemedText type="defaultSemiBold">{title}</ThemedText>
-      </TouchableOpacity>
+/**
+ * An icon component that uses native SF Symbols on iOS, and Material Icons on Android and web.
+ */
+const IconSymbol = ({
+  name,
+  size = 24,
+  color,
+  style,
+  weight,
+}: {
+  name: IconSymbolName;
+  size?: number;
+  color: string | OpaqueColorValue;
+  style?: StyleProp<TextStyle>;
+  weight?: SymbolWeight;
+}) => {
+  return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
+};
 
-      {isOpen && <ThemedView style={styles.content}>{children}</ThemedView>}
-    </ThemedView>
-  );
-}
-
-const styles = StyleSheet.create({
-  heading: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  content: {
-    marginTop: 6,
-    marginLeft: 24,
-  },
-});
+export default IconSymbol;
