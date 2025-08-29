@@ -1,13 +1,16 @@
-// services/googleFlights.ts
-
 import { EXPO_PUBLIC_TRAVEL_API_KEY } from "@env";
 import axios from "axios";
-import { format } from "date-fns";
 
-const API_URL =
-  "https://datacrawler-api-google-flights2.p.rapidapi.com/api/google-flights2/";
+const API_URL = "https://datacrawler-api-google-flights2.p.rapidapi.com/api/google-flights2/";
 
-export interface FlightSearchParams {
+export interface Flight {
+  id: string;
+  cityFrom: string;
+  cityTo: string;
+  price: number;
+}
+
+interface FlightSearchParams {
   origin: string;
   destination: string;
   outbound_date: string;
@@ -16,33 +19,31 @@ export interface FlightSearchParams {
   language_code: string;
 }
 
-export async function searchFlights(params: FlightSearchParams) {
+export async function searchFlights(params: FlightSearchParams): Promise<Flight[]> {
   try {
     const response = await axios.get(`${API_URL}searchFlights`, {
-      params,
+      params: {
+        ...params,
+        show_hidden: 1,
+      },
       headers: {
         "X-RapidAPI-Key": EXPO_PUBLIC_TRAVEL_API_KEY,
         "X-RapidAPI-Host": "datacrawler-api-google-flights2.p.rapidapi.com",
       },
     });
 
-    return response.data;
+    const results = response.data?.results || [];
+
+    const flights: Flight[] = results.map((item: any, index: number) => ({
+      id: `flight-${index}`,
+      cityFrom: item.origin,
+      cityTo: item.destination,
+      price: item.price,
+    }));
+
+    return flights;
   } catch (error: any) {
-    console.error("❌ API Error:", error.response?.data || error.message);
-    return null;
+    console.error("API Error:", error.response?.data || error.message);
+    return [];
   }
 }
-
-// Test run
-(async () => {
-  const result = await searchFlights({
-    origin: "TLV",
-    destination: "LON",
-    outbound_date: format(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"),
-    currency: "USD",
-    country_code: "US",
-    language_code: "en-US",
-  });
-
-  console.log("✈️ API Response:", JSON.stringify(result, null, 2));
-})();
