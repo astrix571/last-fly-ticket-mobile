@@ -1,5 +1,8 @@
-import { EXPO_PUBLIC_TRAVEL_API_KEY } from "@env";
-import axios from "axios";
+import axios from 'axios';
+import { format } from 'date-fns';
+
+const TRAVEL_API_KEY = process.env.EXPO_PUBLIC_TRAVEL_API_KEY!;
+const API_URL = 'https://api.travelpayouts.com/v1/prices/cheap';
 
 export interface Flight {
   cityFrom: string;
@@ -8,39 +11,33 @@ export interface Flight {
   id: string;
 }
 
-const API_URL = "https://DataCrawler-api.p.rapidapi.com/google-flights2/search";
+export async function getFlights(destination: string): Promise<Flight[]> {
+  const origin = 'TLV';
+  const departMonth = format(new Date(), 'yyyy-MM');
 
-export async function searchFlights(params: {
-  origin: string;
-  destination: string;
-  outbound_date: string;
-  currency?: string;
-  country_code?: string;
-  language_code?: string;
-}): Promise<Flight[]> {
   try {
     const response = await axios.get(API_URL, {
       params: {
-        ...params,
-        show_hidden: 1,
-      },
-      headers: {
-        "x-rapidapi-key": EXPO_PUBLIC_TRAVEL_API_KEY,
-        "x-rapidapi-host": "DataCrawler-api.p.rapidapi.com",
-      },
+        origin,
+        destination,
+        depart_date: departMonth,
+        return_date: departMonth,
+        currency: 'usd',
+        token: TRAVEL_API_KEY
+      }
     });
 
-    const flightsRaw = response.data?.message ?? [];
+    const data = response.data?.data?.[destination];
+    if (!data) return [];
 
-    const flights: Flight[] = flightsRaw.map((f: any, index: number) => ({
+    return Object.values(data).map((flight: any, index: number) => ({
       id: `flight-${index}`,
-      cityFrom: params.origin,
-      cityTo: params.destination,
-      price: f.price || f.ticket_price || 0,
+      cityFrom: origin,
+      cityTo: destination,
+      price: flight.price
     }));
-
-    return flights;
-  } catch {
+  } catch (error: any) {
+    console.error('Error fetching flights:', error?.message || error);
     return [];
   }
 }

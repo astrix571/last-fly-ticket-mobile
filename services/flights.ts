@@ -1,7 +1,4 @@
-import { EXPO_PUBLIC_TRAVEL_API_KEY } from "@env";
 import axios from "axios";
-
-const API_URL = "https://datacrawler-api-google-flights2.p.rapidapi.com/api/google-flights2/";
 
 export interface Flight {
   id: string;
@@ -10,40 +7,40 @@ export interface Flight {
   price: number;
 }
 
-interface FlightSearchParams {
-  origin: string;
-  destination: string;
-  outbound_date: string;
-  currency: string;
-  country_code: string;
-  language_code: string;
-}
+const RAPID_KEY = process.env.EXPO_PUBLIC_TRAVEL_API_KEY!;
+const API_URL = "https://google-flights-search.p.rapidapi.com/search";
+const API_HOST = "google-flights-search.p.rapidapi.com";
 
-export async function searchFlights(params: FlightSearchParams): Promise<Flight[]> {
+export async function getFlights(destination: string): Promise<Flight[]> {
+  if (!RAPID_KEY) return [];
   try {
-    const response = await axios.get(`${API_URL}searchFlights`, {
+    const res = await axios.get(API_URL, {
       params: {
-        ...params,
-        show_hidden: 1,
+        departure_id: "TLV",
+        arrival_id: destination,
+        currency: "USD",
+        country_code: "US",
+        language_code: "en-US",
+        travel_class: "ECONOMY",
+        show_hidden: "false",
+        search_type: "best",
+        adults: "1"
       },
       headers: {
-        "X-RapidAPI-Key": EXPO_PUBLIC_TRAVEL_API_KEY,
-        "X-RapidAPI-Host": "datacrawler-api-google-flights2.p.rapidapi.com",
+        "X-RapidAPI-Key": RAPID_KEY,
+        "X-RapidAPI-Host": API_HOST
       },
+      timeout: 20000
     });
 
-    const results = response.data?.results || [];
-
-    const flights: Flight[] = results.map((item: any, index: number) => ({
-      id: `flight-${index}`,
-      cityFrom: item.origin,
-      cityTo: item.destination,
-      price: item.price,
+    const items = res.data?.data ?? res.data?.results ?? [];
+    return items.slice(0, 20).map((it: any, i: number) => ({
+      id: String(it.id ?? i),
+      cityFrom: it.from?.city ?? "TLV",
+      cityTo: it.to?.city ?? destination,
+      price: Number(it.price ?? it.price_total ?? 0)
     }));
-
-    return flights;
-  } catch (error: any) {
-    console.error("API Error:", error.response?.data || error.message);
+  } catch {
     return [];
   }
 }
