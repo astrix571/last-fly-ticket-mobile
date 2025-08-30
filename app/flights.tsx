@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
-import { Flight, searchFlights } from "../services/googleFlights";
+
 
 export default function FlightsScreen() {
   const [flights, setFlights] = useState<Flight[]>([]);
