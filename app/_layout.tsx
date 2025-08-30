@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
-import { useColorScheme } from '@hooks/useColorScheme';
+import useColorScheme from '@hooks/useColorScheme';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -23,12 +23,12 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack initialRouteName="index">
-        <Stack.Screen name="index" options={{ title: 'Mood Selector' }} />
+      <Stack initialRouteName="mood">
+        <Stack.Screen name="mood" options={{ title: 'Mood Selector' }} />
         <Stack.Screen name="destinations" />
         <Stack.Screen name="flights" />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
+        <Stack.Screen name="tabs" options={{ headerShown: false }} />
+        <Stack.Screen name="not-found" />
       </Stack>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
     </ThemeProvider>
