@@ -6,25 +6,27 @@ export default function FlightsScreen() {
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const origin = "TLV";
-  const destination = "ATH";
-  const date = "2025-09-01";
+  const departure_id = "TLV";
 
+  const destinations = ["ATH", "BCN", "FCO", "CDG", "VCE", "JMK", "NCE", "SPU"];
+  const arrival_id = destinations[Math.floor(Math.random() * destinations.length)];
 
   useEffect(() => {
     const fetchFlights = async () => {
       const res = await searchFlights({
-        origin,
-        destination,
-        outbound_date: date,
+        departure_id,
+        arrival_id,
         currency: "USD",
         country_code: "US",
         language_code: "en-US",
+        travel_class: "ECONOMY",
+        show_hidden: "false",
+        search_type: "best",
+        adults: "1",
       });
 
-      console.log("🔍 RAW API RESPONSE:", JSON.stringify(res, null, 2));
-
-      setFlights(res);
+      console.log("🔍 RAW API RESPONSE:", res);
+      setFlights(res || []);
       setLoading(false);
     };
 
@@ -33,14 +35,14 @@ export default function FlightsScreen() {
 
   if (loading) {
     return (
-      <View>
-        <ActivityIndicator />
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
       </View>
     );
   }
 
   return (
-    <View>
+    <View style={{ padding: 16 }}>
       {flights.length === 0 ? (
         <Text>No flights found.</Text>
       ) : (
@@ -48,7 +50,7 @@ export default function FlightsScreen() {
           data={flights}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View>
+            <View style={{ marginBottom: 16 }}>
               <Text>{item.cityFrom} → {item.cityTo}</Text>
               <Text>${item.price}</Text>
             </View>
