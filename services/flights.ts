@@ -1,49 +1,43 @@
-import { EXPO_PUBLIC_TRAVEL_API_KEY } from "@env";
-import axios from "axios";
+import axios from 'axios';
+import { format } from 'date-fns';
 
-const API_URL = "https://datacrawler-api-google-flights2.p.rapidapi.com/api/google-flights2/";
+const TRAVEL_API_KEY = process.env.EXPO_PUBLIC_TRAVEL_API_KEY!;
+const API_URL = 'https://api.travelpayouts.com/v1/prices/cheap';
 
 export interface Flight {
-  id: string;
   cityFrom: string;
   cityTo: string;
   price: number;
+  id: string;
 }
 
-interface FlightSearchParams {
-  origin: string;
-  destination: string;
-  outbound_date: string;
-  currency: string;
-  country_code: string;
-  language_code: string;
-}
+export async function getFlights(destination: string): Promise<Flight[]> {
+  const origin = 'TLV';
+  const departMonth = format(new Date(), 'yyyy-MM');
 
-export async function searchFlights(params: FlightSearchParams): Promise<Flight[]> {
   try {
-    const response = await axios.get(`${API_URL}searchFlights`, {
+    const response = await axios.get(API_URL, {
       params: {
-        ...params,
-        show_hidden: 1,
-      },
-      headers: {
-        "X-RapidAPI-Key": EXPO_PUBLIC_TRAVEL_API_KEY,
-        "X-RapidAPI-Host": "datacrawler-api-google-flights2.p.rapidapi.com",
+        origin,
+        destination,
+        depart_date: departMonth,
+        return_date: departMonth,
+        currency: 'usd',
+        token: TRAVEL_API_KEY,
       },
     });
 
-    const results = response.data?.results || [];
+    const data = response.data.data[destination];
+    if (!data) return [];
 
-    const flights: Flight[] = results.map((item: any, index: number) => ({
+    return Object.values(data).map((flight: any, index: number) => ({
       id: `flight-${index}`,
-      cityFrom: item.origin,
-      cityTo: item.destination,
-      price: item.price,
+      cityFrom: origin,
+      cityTo: destination,
+      price: flight.price,
     }));
-
-    return flights;
   } catch (error: any) {
-    console.error("API Error:", error.response?.data || error.message);
+    console.error('Error fetching flights:', error.message || error);
     return [];
   }
 }
