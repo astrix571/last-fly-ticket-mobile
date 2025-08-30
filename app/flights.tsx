@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
-import { Flight, getFlights } from "../../services/googleFlights";
+import { Flight, getFlights } from "../services/googleFlights";
+
 
 
 export default function FlightsPage() {
