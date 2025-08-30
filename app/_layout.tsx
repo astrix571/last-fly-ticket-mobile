@@ -5,7 +5,8 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
-import useColorScheme from '@hooks/useColorScheme';
+import useColorScheme from '../hooks/useColorScheme';
+
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
