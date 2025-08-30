@@ -1,43 +1,46 @@
-import axios from 'axios';
-import { format } from 'date-fns';
-
-const TRAVEL_API_KEY = process.env.EXPO_PUBLIC_TRAVEL_API_KEY!;
-const API_URL = 'https://api.travelpayouts.com/v1/prices/cheap';
+import axios from "axios";
 
 export interface Flight {
+  id: string;
   cityFrom: string;
   cityTo: string;
   price: number;
-  id: string;
 }
 
-export async function getFlights(destination: string): Promise<Flight[]> {
-  const origin = 'TLV';
-  const departMonth = format(new Date(), 'yyyy-MM');
+const RAPID_KEY = process.env.EXPO_PUBLIC_TRAVEL_API_KEY!;
+const API_URL = "https://google-flights-search.p.rapidapi.com/search";
+const API_HOST = "google-flights-search.p.rapidapi.com";
 
+export async function getFlights(destination: string): Promise<Flight[]> {
+  if (!RAPID_KEY) return [];
   try {
-    const response = await axios.get(API_URL, {
+    const res = await axios.get(API_URL, {
       params: {
-        origin,
-        destination,
-        depart_date: departMonth,
-        return_date: departMonth,
-        currency: 'usd',
-        token: TRAVEL_API_KEY,
+        departure_id: "TLV",
+        arrival_id: destination,
+        currency: "USD",
+        country_code: "US",
+        language_code: "en-US",
+        travel_class: "ECONOMY",
+        show_hidden: "false",
+        search_type: "best",
+        adults: "1"
       },
+      headers: {
+        "X-RapidAPI-Key": RAPID_KEY,
+        "X-RapidAPI-Host": API_HOST
+      },
+      timeout: 20000
     });
 
-    const data = response.data.data[destination];
-    if (!data) return [];
-
-    return Object.values(data).map((flight: any, index: number) => ({
-      id: `flight-${index}`,
-      cityFrom: origin,
-      cityTo: destination,
-      price: flight.price,
+    const items = res.data?.data ?? res.data?.results ?? [];
+    return items.slice(0, 20).map((it: any, i: number) => ({
+      id: String(it.id ?? i),
+      cityFrom: it.from?.city ?? "TLV",
+      cityTo: it.to?.city ?? destination,
+      price: Number(it.price ?? it.price_total ?? 0)
     }));
-  } catch (error: any) {
-    console.error('Error fetching flights:', error.message || error);
+  } catch {
     return [];
   }
 }

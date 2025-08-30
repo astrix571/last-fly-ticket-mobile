@@ -1,35 +1,23 @@
-import { useRouter } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from "expo-router";
+import React from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-const moods = ['calm', 'adventure', 'escape', 'love'];
-
-export default function MoodScreen() {
+export default function MoodPage() {
   const router = useRouter();
-
-  const handleMoodSelect = (mood: string) => {
-    router.push({ pathname: '/destinations', params: { mood } });
-  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>How do you feel today?</Text>
-      {moods.map((mood) => (
-        <Pressable key={mood} style={styles.button} onPress={() => handleMoodSelect(mood)}>
-          <Text style={styles.buttonText}>{mood.toUpperCase()}</Text>
-        </Pressable>
-      ))}
+      <Text style={styles.title}>Select Mood</Text>
+      <Pressable style={styles.button} onPress={() => router.push("/flights")}>
+        <Text style={styles.buttonText}>Go To Flights</Text>
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 24 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 32, textAlign: 'center' },
-  button: {
-    backgroundColor: '#007AFF',
-    padding: 16,
-    borderRadius: 10,
-    marginBottom: 12,
-  },
-  buttonText: { color: 'white', fontSize: 18, textAlign: 'center' },
+  container: { flex: 1, justifyContent: "center", alignItems: "center", gap: 16, padding: 16 },
+  title: { fontSize: 24, fontWeight: "600" },
+  button: { backgroundColor: "#0ea5e9", paddingVertical: 12, paddingHorizontal: 20, borderRadius: 8 },
+  buttonText: { color: "#fff", fontSize: 18, fontWeight: "600" }
 });
